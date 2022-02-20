@@ -5,6 +5,7 @@ from rest_framework import permissions
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import status
 from rest_framework import generics
 
 from rest_framework.decorators import api_view
@@ -33,15 +34,24 @@ class ValueViewset(viewsets.ModelViewSet):
         
         return queryset
     
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data, many=isinstance(request.data,list))
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    
     def perform_create(self, serializer):
-        instance = serializer.save(owner = self.request.user)
-        old_exp_array = instance.experiences.all()
-        new_exp_array = []
-        for exp in old_exp_array:
-            if exp.owner == self.request.user:
-                new_exp_array.append(exp)
+        instances = serializer.save(owner = self.request.user)
+        for item in instances:
+            old_exp_array = item.experiences.all()
+            new_exp_array = []
+            for exp in old_exp_array:
+                if exp.owner == self.request.user:
+                    new_exp_array.append(exp)
 
-        serializer.save(experiences=new_exp_array)
+            item.experiences.set(new_exp_array)
+            item.save()
         
     def perform_update(self, serializer):
         instance = serializer.save(owner = self.request.user)
@@ -68,15 +78,24 @@ class SkillViewset(viewsets.ModelViewSet):
         
         return queryset
     
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data, many=isinstance(request.data,list))
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    
     def perform_create(self, serializer):
-        instance = serializer.save(owner = self.request.user)
-        old_exp_array = instance.experiences.all()
-        new_exp_array = []
-        for exp in old_exp_array:
-            if exp.owner == self.request.user:
-                new_exp_array.append(exp)
+        instances = serializer.save(owner = self.request.user)
+        for item in instances:
+            old_exp_array = item.experiences.all()
+            new_exp_array = []
+            for exp in old_exp_array:
+                if exp.owner == self.request.user:
+                    new_exp_array.append(exp)
 
-        serializer.save(experiences=new_exp_array)
+            item.experiences.set(new_exp_array)
+            item.save()
         
     def perform_update(self, serializer):
         instance = serializer.save(owner = self.request.user)
@@ -98,22 +117,30 @@ class ExperienceViewset(viewsets.ModelViewSet):
         queryset = queryset.filter(owner__exact=self.request.user)
         return queryset
     
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data, many=isinstance(request.data,list))
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    
     def perform_create(self, serializer):
-        instance = serializer.save(owner = self.request.user)
-        
-        old_value_array = instance.value_set.all()
-        new_value_array = []
-        for value in old_value_array:
-            if value.owner == self.request.user:
-                new_value_array.append(value)
-        
-        old_skill_array = instance.skill_set.all()
-        new_skill_array = []
-        for skill in old_skill_array:
-            if skill.owner == self.request.user:
-                new_skill_array.append(skill)
-
-        serializer.save(skill_set=new_skill_array, value_set=new_value_array)
+        instances = serializer.save(owner = self.request.user)
+        for item in instances:
+            old_value_array = item.value_set.all()
+            new_value_array = []
+            for value in old_value_array:
+                if value.owner == self.request.user:
+                    new_value_array.append(value)
+            
+            old_skill_array = item.skill_set.all()
+            new_skill_array = []
+            for skill in old_skill_array:
+                if skill.owner == self.request.user:
+                    new_skill_array.append(skill)
+            item.skill_set.set(new_skill_array)
+            item.value_set.set(new_value_array)
+            item.save()
         
     def perform_update(self, serializer):
         instance = serializer.save(owner = self.request.user)
