@@ -75,7 +75,7 @@ class UserCreateSerializer(serializers.HyperlinkedModelSerializer):
         return (user)
         
 class UserDetailSerializer(serializers.HyperlinkedModelSerializer):
-    username = serializers.CharField(required=True, validators=[UniqueValidator( queryset=User.objects.all() )])
+    username = serializers.CharField(required=False, validators=[UniqueValidator( queryset=User.objects.all() )])
     password = serializers.CharField(write_only=True, validators=[validate_password], required=False)
     password2 = serializers.CharField(write_only=True, required=False)
 
