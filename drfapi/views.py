@@ -42,8 +42,8 @@ class ValueViewset(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     
     def perform_create(self, serializer):
-        instances = serializer.save(owner = self.request.user)
-        for item in instances:
+        item = serializer.save(owner = self.request.user)
+        if (item is not list):
             old_exp_array = item.experiences.all()
             new_exp_array = []
             for exp in old_exp_array:
@@ -52,6 +52,10 @@ class ValueViewset(viewsets.ModelViewSet):
 
             item.experiences.set(new_exp_array)
             item.save()
+        else :
+            for instance in item:
+                instance.save()
+
         
     def perform_update(self, serializer):
         instance = serializer.save(owner = self.request.user)
@@ -86,8 +90,8 @@ class SkillViewset(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     
     def perform_create(self, serializer):
-        instances = serializer.save(owner = self.request.user)
-        for item in instances:
+        item = serializer.save(owner = self.request.user)
+        if (item is not list):
             old_exp_array = item.experiences.all()
             new_exp_array = []
             for exp in old_exp_array:
@@ -96,6 +100,9 @@ class SkillViewset(viewsets.ModelViewSet):
 
             item.experiences.set(new_exp_array)
             item.save()
+        else :
+            for instance in item:
+                instance.save()
         
     def perform_update(self, serializer):
         instance = serializer.save(owner = self.request.user)
@@ -125,8 +132,8 @@ class ExperienceViewset(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     
     def perform_create(self, serializer):
-        instances = serializer.save(owner = self.request.user)
-        for item in instances:
+        item = serializer.save(owner = self.request.user)
+        if item is not list:
             old_value_array = item.value_set.all()
             new_value_array = []
             for value in old_value_array:
@@ -138,9 +145,13 @@ class ExperienceViewset(viewsets.ModelViewSet):
             for skill in old_skill_array:
                 if skill.owner == self.request.user:
                     new_skill_array.append(skill)
+                    
             item.skill_set.set(new_skill_array)
             item.value_set.set(new_value_array)
             item.save()
+        else:
+            for instance in item:
+                instance.save()
         
     def perform_update(self, serializer):
         instance = serializer.save(owner = self.request.user)
