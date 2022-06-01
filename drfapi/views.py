@@ -43,7 +43,7 @@ class ValueViewset(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         item = serializer.save(owner = self.request.user)
-        if (item is not list):
+        if (type(item) is not list):
             old_exp_array = item.experiences.all()
             new_exp_array = []
             for exp in old_exp_array:
@@ -55,6 +55,7 @@ class ValueViewset(viewsets.ModelViewSet):
         else :
             for instance in item:
                 instance.save()
+            
 
         
     def perform_update(self, serializer):
@@ -91,7 +92,7 @@ class SkillViewset(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         item = serializer.save(owner = self.request.user)
-        if (item is not list):
+        if (type(item) is not list):
             old_exp_array = item.experiences.all()
             new_exp_array = []
             for exp in old_exp_array:
@@ -133,7 +134,7 @@ class ExperienceViewset(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         item = serializer.save(owner = self.request.user)
-        if item is not list:
+        if (type(item) is not list):
             old_value_array = item.value_set.all()
             new_value_array = []
             for value in old_value_array:
